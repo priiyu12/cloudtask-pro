@@ -830,15 +830,5 @@ cloudtask-pro/
 
 ---
 
-# 🌟 Resume Highlights
-
-If you are reviewing this project, note the following architectural achievements:
-- Transitioned a monolithic local app to a horizontally scalable **GCP architecture**.
-- Solved complex networking issues (Firewalls, Reverse Proxies, Load Balancers).
-- Implemented **FinOps** strategies to minimize early-stage burn rates.
-- Transitioned to **Infrastructure as Code** for highly reproducible deployments.
-
----
-
 # 🙏 Acknowledgements
 Built as a comprehensive demonstration of migrating a monolith to a scalable, cloud-native architecture on Google Cloud Platform.
