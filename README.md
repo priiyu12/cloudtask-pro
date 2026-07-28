@@ -24,7 +24,6 @@
 15. [Live Deployment](#-live-deployment)
 16. [Local Development](#-local-development)
 17. [Folder Structure](#-folder-structure)
-18. [Resume Highlights](#-resume-highlights)
 
 ---
 
@@ -827,8 +826,3 @@ cloudtask-pro/
 ├── docker-compose.yml
 └── README.md
 ```
-
----
-
-# 🙏 Acknowledgements
-Built as a comprehensive demonstration of migrating a monolith to a scalable, cloud-native architecture on Google Cloud Platform.
