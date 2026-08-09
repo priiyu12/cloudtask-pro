@@ -1,7 +1,7 @@
 # ☁️ CloudTask Pro
 ### Production-Ready Cloud Native Project Management Platform
 
-[Live Demo](http://104.198.151.178) | [API Docs](http://104.198.151.178:8000/docs) 
+[Live Demo](http://<AWS-ELASTIC-IP>) | [API Docs](http://<AWS-ELASTIC-IP>:8000/docs) 
 
 ---
 
@@ -12,7 +12,7 @@
 3. [Features](#-features)
 4. [Architecture](#-overall-architecture)
 5. [Technology Stack](#-technology-stack)
-6. [Why Google Cloud Platform?](#-why-google-cloud-platform)
+6. [Why AWS?](#-why-google-cloud-platform)
 7. [Cloud Migration Journey](#-cloud-migration-journey)
 8. [Feature-wise Cloud Journey](#-feature-wise-cloud-journey)
 9. [Performance Optimizations](#-performance-optimizations)
@@ -86,13 +86,13 @@ graph LR
 **Phase 3: Managed Cloud Architecture (Final Production)**
 ```mermaid
 graph TD
-    Internet --> CloudCDN(Cloud CDN)
-    CloudCDN --> LoadBalancer(HTTPS Load Balancer)
-    LoadBalancer --> MIG(Managed Instance Group)
-    MIG --> Frontend(React)
-    MIG --> Backend(FastAPI)
-    Backend --> CloudSQL(Cloud SQL Postgres)
-    Backend --> GCS(Cloud Storage)
+    Internet --> CloudCDN(Amazon CloudFront)
+    CloudCDN --> LoadBalancer(HTTPS Application Load Balancer (ALB))
+    LoadBalancer --> Auto Scaling Group(Auto Scaling Group)
+    Auto Scaling Group --> Frontend(React)
+    Auto Scaling Group --> Backend(FastAPI)
+    Backend --> CloudSQL(Amazon RDS PostgreSQL Postgres)
+    Backend --> S3(Amazon S3)
 ```
 
 ---
@@ -103,38 +103,42 @@ graph TD
 **Backend**: FastAPI, SQLAlchemy, Alembic
 **Database**: PostgreSQL
 **Containerization**: Docker, Docker Compose
-**Cloud**: Google Cloud Platform (Compute Engine, Cloud SQL, Cloud Storage, Cloud CDN, Cloud Load Balancer, MIG)
+**Cloud**: AWS (Amazon EC2, Amazon RDS PostgreSQL, Amazon S3, Amazon CloudFront, Application Application Load Balancer (ALB) (ALB), Auto Scaling Group)
 **Infrastructure**: Terraform
 **CI/CD**: GitHub Actions
-**Monitoring**: Cloud Monitoring, Cloud Logging
+**Monitoring**: Amazon CloudWatch, Amazon CloudWatch Logs
 
 ---
 
-# ☁ Why Google Cloud Platform?
+# ☁ Why AWS?
 
-## Why not AWS?
-AWS provides incredible breadth, but services like RDS and ECS have a steeper learning curve and higher baseline costs for small-scale MVP iterations compared to GCP's Compute Engine and Cloud SQL integration.
+## Why not Google Cloud?
+
+AWS was selected because CloudTask Pro is being used as an AWS-focused cloud engineering project. AWS provides mature, widely adopted services for compute, managed PostgreSQL, object storage, CDN, load balancing, autoscaling, monitoring, IAM, CI/CD, and infrastructure as code.
 
 ## Why not Azure?
-Azure is excellent for strictly .NET/Enterprise environments, but GCP feels much more native to containerized workloads (Kubernetes/Docker) and open-source stacks like Python/React.
 
-## Why GCP?
-- **Better free credits**: Generous $300 tier allowing us to prototype large-scale infrastructure before paying out of pocket.
-- **Simpler networking**: VPCs and firewall configurations are intuitive. Global load balancers don't require complex regional routing configurations.
-- **Cost-effective**: Right-sizing with custom machine types (e2-medium) kept our early-stage burn rate extremely low.
+Azure is an excellent choice, particularly for Microsoft-centric environments. For this project, AWS provides a broad set of services that map cleanly to the architecture we want to demonstrate and are widely encountered in cloud and DevOps roles.
 
----
+## Why AWS?
+
+- **Broad service ecosystem**: EC2, RDS, S3, CloudFront, ALB, Auto Scaling, CloudWatch and IAM cover the complete deployment path.
+- **Industry adoption**: AWS concepts and services are widely used in production environments.
+- **Flexible architecture**: The platform can evolve from a single VM to highly available, autoscaled infrastructure.
+- **Cost control**: We can start small and scale only when the workload requires it.
+
+> Cost figures are estimates. Actual AWS pricing depends on region, usage, storage, data transfer, requests, and applicable free-tier or credit eligibility.
 
 # 🚀 Cloud Migration Journey
 
 **Version 1:** Local Machine ➔ SQLite ➔ Single Process
 **Version 2:** Docker ➔ Docker Compose ➔ PostgreSQL
-**Version 3:** Compute Engine ➔ Public Deployment
-**Version 4:** Cloud SQL ➔ Managed Database
-**Version 5:** Cloud Storage ➔ Static Hosting
-**Version 6:** Cloud CDN ➔ Global Performance
-**Version 7:** Load Balancer ➔ High Availability
-**Version 8:** Managed Instance Group ➔ Auto Scaling
+**Version 3:** Amazon EC2 ➔ Public Deployment
+**Version 4:** Amazon RDS PostgreSQL ➔ Managed Database
+**Version 5:** Amazon S3 ➔ Static Hosting
+**Version 6:** Amazon CloudFront ➔ Global Performance
+**Version 7:** Application Load Balancer (ALB) ➔ High Availability
+**Version 8:** Auto Scaling Group ➔ Auto Scaling
 **Version 9:** GitHub Actions ➔ CI/CD
 **Version 10:** Terraform ➔ Infrastructure as Code
 
@@ -155,7 +159,7 @@ We needed a rapid prototyping environment without incurring any cloud costs or d
 ### Decision
 Utilize Localhost with Vite hot-reloading for the frontend and Uvicorn hot-reloading for the backend.
 
-### GCP Service Used
+### AWS Service Used
 None initially.
 
 ### Implementation
@@ -203,7 +207,7 @@ Local development is great for speed, but environmental differences (OS, depende
 ### Decision
 Use Docker and Docker Compose to unify the development and deployment stack.
 
-### GCP Service Used
+### AWS Service Used
 None (Local Docker engine).
 
 ### Implementation
@@ -245,13 +249,13 @@ SQLite locks the entire database on writes, causing concurrency issues when mult
 ### Alternatives Considered
 - Stay with SQLite (Too slow for production)
 - Self-host PostgreSQL
-- Managed Cloud SQL
+- Managed Amazon RDS PostgreSQL
 
 ### Decision
-Use PostgreSQL in Docker first to conserve startup costs while validating the data schema, then migrate to Cloud SQL.
+Use PostgreSQL in Docker first to conserve startup costs while validating the data schema, then migrate to Amazon RDS PostgreSQL.
 
-### GCP Service Used
-Cloud SQL (later phase).
+### AWS Service Used
+Amazon RDS PostgreSQL (later phase).
 
 ### Implementation
 Swapped the SQLAlchemy connection string from `sqlite:///` to `postgresql+psycopg2://`.
@@ -285,97 +289,97 @@ Always decouple stateful data from stateless compute. Running migrations via a d
 
 ---
 
-## 04 - First Cloud Deployment (Compute Engine)
+## 04 - First Cloud Deployment (Amazon EC2)
 
 ### Problem
 The application needed to be publicly accessible for beta testers, moving it off localhost.
 
 ### Alternatives Considered
-- Google Cloud Run (Serverless)
+- AWS Run (Serverless)
 - Google App Engine (PaaS)
-- Google Compute Engine (IaaS VM)
+- Google Amazon EC2 (IaaS VM)
 
 ### Decision
-Compute Engine VM (`e2-medium`) to run our existing Docker Compose stack directly with minimal architectural changes.
+Amazon EC2 VM (`t3.small`) to run our existing Docker Compose stack directly with minimal architectural changes.
 
-### GCP Service Used
-Compute Engine, VPC Firewalls.
+### AWS Service Used
+Amazon EC2, VPC Firewalls.
 
 ### Implementation
 Provisioned an Ubuntu VM, installed Docker, cloned the repository, and ran `docker compose up -d`.
 
 ### Challenges
-- GCP VMs block all ingress traffic by default. Our frontend was mapped to port `3000`, making it unreachable.
-- Uvicorn was running synchronously on 1 core, wasting 50% of the `e2-medium` CPU.
+- AWS VMs block all ingress traffic by default. Our frontend was mapped to port `3000`, making it unreachable.
+- Uvicorn was running synchronously on 1 core, wasting 50% of the `t3.small` CPU.
 
 ### Resolution
-- Re-mapped Docker to `80:80` and used the `http-server` GCP network tag.
-- Opened port `8000` via `gcloud compute firewall-rules` to allow API testing.
+- Re-mapped Docker to `80:80` and used the `http-server` AWS network tag.
+- Opened port `8000` via `EC2 Security Group rules` to allow API testing.
 - Injected `--workers 4` into the FastAPI startup script to maximize concurrency.
 
 ### Architecture Before
 Localhost Docker.
 
 ### Architecture After
-Public Compute Engine VM serving traffic via Static IP.
+Public Amazon EC2 VM serving traffic via Static IP.
 
 ### Estimated Monthly Cost
 | Resource | Estimate |
 |----------|----------|
-| e2-medium VM | ~$25.00 |
+| t3.small VM | ~$25.00 |
 | Standard PD (20GB)| ~$0.80 |
 
 ### Trade-offs
 A single VM is a single point of failure. If the zone goes down, the application goes down.
 
 ### Interview Questions
-*How do you secure a Compute Engine VM exposed to the public internet?*
+*How do you secure a Amazon EC2 VM exposed to the public internet?*
 
 ### Key Learnings
 Cloud firewalls operate independently of host OS firewalls (UFW). Always check VPC firewall rules when facing connection timeouts.
 
 ---
 
-## 05 - Cloud SQL Migration
+## 05 - Amazon RDS PostgreSQL Migration
 
 ### Problem
-Storing the PostgreSQL database on a single Compute Engine persistent disk poses a massive risk of data loss. If the VM crashes or the disk corrupts, all user data is gone.
+Storing the PostgreSQL database on a single Amazon EC2 persistent disk poses a massive risk of data loss. If the VM crashes or the disk corrupts, all user data is gone.
 
 ### Alternatives Considered
-- Self-host Postgres on a dedicated Compute Engine VM with manual cron backups.
-- Google Cloud SQL (Managed).
+- Self-host Postgres on a dedicated Amazon EC2 VM with manual cron backups.
+- AWS SQL (Managed).
 
 ### Decision
-Migrate to Cloud SQL to inherit automated backups, high availability, and automated point-in-time recovery.
+Migrate to Amazon RDS PostgreSQL to inherit automated backups, high availability, and automated point-in-time recovery.
 
-### GCP Service Used
-Cloud SQL for PostgreSQL.
+### AWS Service Used
+Amazon RDS PostgreSQL for PostgreSQL.
 
 ### Implementation
-Provisioned a `db-f1-micro` instance. Exported the Docker `.sql` dump and imported it to Cloud SQL. Updated the VM's `.env` to point to the internal VPC IP of the Cloud SQL instance.
+Provisioned a `db.t3.micro` instance. Exported the Docker `.sql` dump and imported it to Amazon RDS PostgreSQL. Updated the VM's `.env` to point to the internal VPC IP of the Amazon RDS PostgreSQL instance.
 
 ### Challenges
-- Securely connecting to Cloud SQL from Compute Engine without exposing the database to the public internet.
+- Securely connecting to Amazon RDS PostgreSQL from Amazon EC2 without exposing the database to the public internet.
 
 ### Resolution
-Configured Private IP for the Cloud SQL instance within the same VPC as the Compute Engine VM, entirely bypassing public routing.
+Configured Private IP for the Amazon RDS PostgreSQL instance within the same VPC as the Amazon EC2 VM, entirely bypassing public routing.
 
 ### Architecture Before
 FastAPI -> Local Docker Postgres.
 
 ### Architecture After
-FastAPI -> Cloud SQL (Private VPC).
+FastAPI -> Amazon RDS PostgreSQL (Private VPC).
 
 ### Estimated Monthly Cost
 | Resource | Estimate |
 |----------|----------|
-| Cloud SQL (Micro)| ~$10.00 |
+| Amazon RDS PostgreSQL (Micro)| ~$10.00 |
 
 ### Trade-offs
 Higher monthly fixed cost, but completely removes the operational burden of database administration.
 
 ### Interview Questions
-*Why use Private IP for database connections instead of Cloud SQL Auth Proxy?*
+*Why use Private IP for database connections instead of Amazon RDS PostgreSQL Auth Proxy?*
 
 ### Key Learnings
 Managed databases are the most critical investment for any production app. The peace of mind regarding backups is worth the cost.
@@ -385,41 +389,41 @@ Managed databases are the most critical investment for any production app. The p
 ## 06 - Static Asset Hosting
 
 ### Problem
-Nginx serving heavy static React assets (JS, CSS, Images) from the Compute Engine VM eats valuable CPU cycles and memory that should be reserved for the FastAPI backend.
+Nginx serving heavy static React assets (JS, CSS, Images) from the Amazon EC2 VM eats valuable CPU cycles and memory that should be reserved for the FastAPI backend.
 
 ### Alternatives Considered
 - Keep Nginx on the VM.
 - Firebase Hosting.
-- Google Cloud Storage (GCS).
+- AWS Storage (S3).
 
 ### Decision
-Offload the frontend build directly to a Google Cloud Storage bucket configured for static website hosting.
+Offload the frontend build directly to a AWS Storage bucket configured for static website hosting.
 
-### GCP Service Used
-Cloud Storage.
+### AWS Service Used
+Amazon S3.
 
 ### Implementation
-Ran `npm run build`, then used `gsutil rsync -R dist/ gs://cloudtask-pro-frontend` to push the static files to a public bucket.
+Ran `npm run build`, then used `aws s3 sync dist/ s3://cloudtask-pro-frontend` to push the static files to a public bucket.
 
 ### Challenges
 - Handling React Router's client-side routing (returning a 404 on refresh).
 
 ### Resolution
-Configured the GCS bucket's `MainPageSuffix` to `index.html` and `NotFoundPage` to `index.html` to allow React Router to handle the URL paths.
+Configured the S3 bucket's `MainPageSuffix` to `index.html` and `NotFoundPage` to `index.html` to allow React Router to handle the URL paths.
 
 ### Architecture Before
 VM Nginx serving React.
 
 ### Architecture After
-GCS Bucket serving React directly to users.
+S3 Bucket serving React directly to users.
 
 ### Estimated Monthly Cost
 | Resource | Estimate |
 |----------|----------|
-| Cloud Storage (10GB)| ~$0.20 |
+| Amazon S3 (10GB)| ~$0.20 |
 
 ### Trade-offs
-Deployments require pushing to GCS instead of just pulling git on the server.
+Deployments require pushing to S3 instead of just pulling git on the server.
 
 ### Interview Questions
 *How does client-side routing differ from server-side routing when hosting on an S3-compatible bucket?*
@@ -432,37 +436,37 @@ Decoupling the frontend from the backend compute layer drastically reduces serve
 ## 07 - CDN Integration
 
 ### Problem
-Users in Europe and Asia experience high latency (300ms+) when loading the frontend assets from our US-based Cloud Storage bucket.
+Users in Europe and Asia experience high latency (300ms+) when loading the frontend assets from our US-based Amazon S3 bucket.
 
 ### Alternatives Considered
 - Cloudflare.
-- Google Cloud CDN.
+- AWS CDN.
 
 ### Decision
-Enable Google Cloud CDN to cache static assets at edge nodes globally.
+Enable AWS CDN to cache static assets at edge nodes globally.
 
-### GCP Service Used
-Cloud CDN.
+### AWS Service Used
+Amazon CloudFront.
 
 ### Implementation
-Attached Cloud CDN to the backend bucket serving the frontend.
+Attached Amazon CloudFront to the backend bucket serving the frontend.
 
 ### Challenges
 - Cache invalidation on new deployments. Users were seeing outdated versions of the app after we pushed updates.
 
 ### Resolution
-Leveraged Vite's automatic content hashing (e.g., `main-a3f2b.js`). Configured GCS headers with long `Cache-Control` for hashed files, and `no-cache` for `index.html`.
+Leveraged Vite's automatic content hashing (e.g., `main-a3f2b.js`). Configured S3 headers with long `Cache-Control` for hashed files, and `no-cache` for `index.html`.
 
 ### Architecture Before
-Direct fetch from US-based Cloud Storage.
+Direct fetch from US-based Amazon S3.
 
 ### Architecture After
-Fetch from closest Global Edge Node via Cloud CDN.
+Fetch from closest Global Edge Node via Amazon CloudFront.
 
 ### Estimated Monthly Cost
 | Resource | Estimate |
 |----------|----------|
-| Cloud CDN | ~$2.00 (Traffic dependent) |
+| Amazon CloudFront | ~$2.00 (Traffic dependent) |
 
 ### Trade-offs
 Cache invalidation adds complexity to the CI/CD pipeline.
@@ -475,37 +479,37 @@ Caching is powerful but dangerous. Always ensure your `index.html` is never aggr
 
 ---
 
-## 08 - Load Balancer
+## 08 - Application Load Balancer (ALB)
 
 ### Problem
-The application requires HTTPS (SSL/TLS) for security compliance, and we need a centralized entry point to route traffic between the frontend (GCS) and backend (Compute Engine).
+The application requires HTTPS (SSL/TLS) for security compliance, and we need a centralized entry point to route traffic between the frontend (S3) and backend (Amazon EC2).
 
 ### Alternatives Considered
 - Nginx with Let's Encrypt (Certbot) on the VM.
-- Google Cloud Global External HTTP(S) Load Balancer.
+- AWS Global External HTTP(S) Application Load Balancer (ALB).
 
 ### Decision
-Cloud Load Balancer, to provide Google-managed SSL certificates and advanced routing rules.
+Application Application Load Balancer (ALB) (ALB), to provide AWS AWS Certificate Manager (ACM) (ACM) managed certificates and advanced routing rules.
 
-### GCP Service Used
-Cloud Load Balancing, Certificate Manager.
+### AWS Service Used
+Cloud Load Balancing, AWS Certificate Manager (ACM).
 
 ### Implementation
 Created URL maps:
-- `/*` ➔ Cloud Storage Bucket (Frontend)
-- `/api/*` ➔ Compute Engine Backend Service (API)
+- `/*` ➔ Amazon S3 Bucket (Frontend)
+- `/api/*` ➔ Amazon EC2 Backend Service (API)
 
 ### Challenges
-- The Load Balancer's health checks were failing, causing it to return 502 Bad Gateway errors.
+- The Application Load Balancer (ALB)'s health checks were failing, causing it to return 502 Bad Gateway errors.
 
 ### Resolution
-Implemented a dedicated `/health` endpoint in FastAPI that returns `200 OK` and pointed the Load Balancer health check explicitly to that route.
+Implemented a dedicated `/health` endpoint in FastAPI that returns `200 OK` and pointed the Application Load Balancer (ALB) health check explicitly to that route.
 
 ### Architecture Before
 Direct IP access via HTTP.
 
 ### Architecture After
-HTTPS Domain access routed via Global Load Balancer.
+HTTPS Domain access routed via Global Application Load Balancer (ALB).
 
 ### Estimated Monthly Cost
 | Resource | Estimate |
@@ -513,50 +517,50 @@ HTTPS Domain access routed via Global Load Balancer.
 | Forwarding Rules | ~$18.00 |
 
 ### Trade-offs
-Load Balancers are expensive for low-traffic sites, but absolutely necessary for zero-downtime deployments and SSL management.
+Application Load Balancer (ALB)s are expensive for low-traffic sites, but absolutely necessary for zero-downtime deployments and SSL management.
 
 ### Interview Questions
-*How does an HTTP Load Balancer know which backend service to route traffic to?*
+*How does an HTTP Application Load Balancer (ALB) know which backend service to route traffic to?*
 
 ### Key Learnings
-Google-managed SSL certificates take up to 30 minutes to provision. Patience is required during DNS propagation.
+AWS AWS Certificate Manager (ACM) (ACM) managed certificates take up to 30 minutes to provision. Patience is required during DNS propagation.
 
 ---
 
-## 09 - Auto Scaling (Managed Instance Group)
+## 09 - Auto Scaling (Auto Scaling Group)
 
 ### Problem
-During peak hours, our single Compute Engine VM CPU spikes to 100%, causing request timeouts.
+During peak hours, our single Amazon EC2 VM CPU spikes to 100%, causing request timeouts.
 
 ### Alternatives Considered
 - Manually upgrading the VM to `e2-standard-4` (Vertical Scaling).
-- Managed Instance Groups (Horizontal Scaling).
+- Auto Scaling Groups (Horizontal Scaling).
 
 ### Decision
-Implement Managed Instance Groups (MIGs) to auto-scale horizontally based on CPU utilization.
+Implement Auto Scaling Groups (Auto Scaling Groups) to auto-scale horizontally based on CPU utilization.
 
-### GCP Service Used
-Instance Templates, Managed Instance Groups.
+### AWS Service Used
+Launch Templates, Auto Scaling Groups.
 
 ### Implementation
-Created an Instance Template containing a startup script that pulls the Docker image on boot. Configured the MIG to scale from 1 to 5 instances if CPU exceeds 70%.
+Created an Instance Template containing a startup script that pulls the Docker image on boot. Configured the Auto Scaling Group to scale from 1 to 5 instances if CPU exceeds 70%.
 
 ### Challenges
 - Session state persistence. If a user authenticates on VM #1, and their next request hits VM #2, they would be logged out if sessions were stored in memory.
 
 ### Resolution
-Ensured the backend architecture relied entirely on stateless JWTs verified against the shared Cloud SQL database, making the compute instances 100% stateless.
+Ensured the backend architecture relied entirely on stateless JWTs verified against the shared Amazon RDS PostgreSQL database, making the compute instances 100% stateless.
 
 ### Architecture Before
 Single static VM.
 
 ### Architecture After
-Dynamic pool of 1-5 VMs behind a Load Balancer.
+Dynamic pool of 1-5 VMs behind a Application Load Balancer (ALB).
 
 ### Estimated Monthly Cost
 | Resource | Estimate |
 |----------|----------|
-| MIG (e2-micro x 2) | ~$15.00 |
+| Auto Scaling Group (t3.micro x 2) | ~$15.00 |
 
 ### Trade-offs
 Requires a completely stateless application architecture. Logs are now distributed across multiple machines.
@@ -576,26 +580,26 @@ Manual deployments via SSH and `git pull` are slow, error-prone, and cause downt
 
 ### Alternatives Considered
 - Jenkins (Too heavy to manage).
-- Google Cloud Build.
+- AWS Build.
 - GitHub Actions.
 
 ### Decision
 GitHub Actions, as our code already lives on GitHub.
 
-### GCP Service Used
+### AWS Service Used
 Artifact Registry, IAM Workload Identity Federation.
 
 ### Implementation
 Wrote a `.github/workflows/deploy.yml` that:
 1. Runs tests on PR.
 2. Builds and pushes Docker images to Artifact Registry on `main` merge.
-3. Triggers a rolling update on the MIG.
+3. Triggers a rolling update on the Auto Scaling Group.
 
 ### Challenges
-- Securely authenticating GitHub Actions with GCP without exporting long-lived Service Account JSON keys.
+- Securely authenticating GitHub Actions with AWS without exporting long-lived Service Account JSON keys.
 
 ### Resolution
-Configured Workload Identity Federation to establish a trust relationship between GitHub and GCP using OIDC tokens.
+Configured Workload Identity Federation to establish a trust relationship between GitHub and AWS using OIDC tokens.
 
 ### Architecture Before
 Manual SSH deployments.
@@ -627,22 +631,22 @@ We were completely blind to 500 errors and slow database queries in production.
 ### Alternatives Considered
 - Datadog (Expensive).
 - Prometheus & Grafana (Requires self-hosting and management).
-- Cloud Operations Suite (Stackdriver).
+- Amazon CloudWatch (Stackdriver).
 
 ### Decision
-Cloud Operations Suite (Cloud Monitoring and Cloud Logging) since it is deeply integrated into GCP.
+Amazon CloudWatch (Amazon CloudWatch and Amazon CloudWatch Logs) since it is deeply integrated into AWS.
 
-### GCP Service Used
-Cloud Monitoring, Cloud Logging.
+### AWS Service Used
+Amazon CloudWatch, Amazon CloudWatch Logs.
 
 ### Implementation
-Installed the Ops Agent on the MIG instances. Configured custom dashboards for CPU, Memory, and Load Balancer 5xx error rates.
+Installed the Ops Agent on the Auto Scaling Group instances. Configured custom dashboards for CPU, Memory, and Application Load Balancer (ALB) 5xx error rates.
 
 ### Challenges
 - FastAPI logs were being ingested as plain text, making them impossible to filter or search efficiently.
 
 ### Resolution
-Implemented `python-json-logger` to format Uvicorn logs as structured JSON, allowing GCP to parse severity levels and metadata natively.
+Implemented `python-json-logger` to format Uvicorn logs as structured JSON, allowing AWS to parse severity levels and metadata natively.
 
 ### Architecture Before
 No visibility, reactive debugging via SSH.
@@ -653,7 +657,7 @@ Proactive alerting via Email/Slack on error spikes.
 ### Estimated Monthly Cost
 | Resource | Estimate |
 |----------|----------|
-| Cloud Logging | ~$0.00 (Under free tier limits) |
+| Amazon CloudWatch Logs | ~$0.00 (Under free tier limits) |
 
 ### Trade-offs
 Logging heavy payloads can incur unexpected costs at massive scale.
@@ -669,27 +673,27 @@ Structured logging (JSON) is mandatory for distributed systems. You cannot `grep
 ## 12 - Infrastructure as Code
 
 ### Problem
-All our GCP resources (SQL, MIGs, Load Balancers) were created manually via the Google Cloud Console. If we accidentally delete something, rebuilding it would take hours and rely on human memory.
+All our AWS resources (SQL, Auto Scaling Groups, Application Load Balancer (ALB)s) were created manually via the AWS Console. If we accidentally delete something, rebuilding it would take hours and rely on human memory.
 
 ### Alternatives Considered
-- Google Cloud Deployment Manager.
+- AWS Deployment Manager.
 - Pulumi.
 - Terraform.
 
 ### Decision
 Terraform, the industry standard for cloud-agnostic IaC.
 
-### GCP Service Used
-Cloud Storage (for tfstate).
+### AWS Service Used
+Amazon S3 (for tfstate).
 
 ### Implementation
-Wrote `.tf` files defining the VPC, Cloud SQL instance, MIGs, and Load Balancers.
+Wrote `.tf` files defining the VPC, Amazon RDS PostgreSQL instance, Auto Scaling Groups, and Application Load Balancer (ALB)s.
 
 ### Challenges
 - Managing the Terraform state file in a collaborative team environment.
 
 ### Resolution
-Configured a GCS bucket as the Terraform remote state backend, with versioning enabled to prevent accidental state corruption.
+Configured a S3 bucket as the Terraform remote state backend, with versioning enabled to prevent accidental state corruption.
 
 ### Architecture Before
 ClickOps (Manual console configuration).
@@ -700,7 +704,7 @@ Declarative Infrastructure managed via GitHub PRs.
 ### Estimated Monthly Cost
 | Resource | Estimate |
 |----------|----------|
-| GCS State Bucket | ~$0.01 |
+| S3 State Bucket | ~$0.01 |
 
 ### Trade-offs
 Initial setup takes significantly longer than clicking through the UI.
@@ -732,9 +736,9 @@ Infrastructure as Code is documentation that executes. It is the only way to rel
 
 # 📊 Monitoring
 
-- **Cloud Logging**: Structured JSON logging across all Python microservices.
-- **Cloud Monitoring**: Dashboards tracking 99th percentile API latency.
-- **Health Checks**: Automated `/health` endpoints ensure Load Balancers instantly drop unhealthy nodes.
+- **Amazon CloudWatch Logs**: Structured JSON logging across all Python microservices.
+- **Amazon CloudWatch**: Dashboards tracking 99th percentile API latency.
+- **Health Checks**: Automated `/health` endpoints ensure Application Load Balancer (ALB)s instantly drop unhealthy nodes.
 
 ---
 
@@ -743,20 +747,20 @@ Infrastructure as Code is documentation that executes. It is the only way to rel
 ## Development Phase (Current)
 | Resource | Monthly Cost Estimate |
 |----------|--------------|
-| Compute Engine (e2-medium) | ~$25.00 |
+| Amazon EC2 (t3.small) | ~$25.00 |
 | Standard Persistent Disk (20GB) | ~$0.80 |
 | **Total** | **~$25.80** |
 
 ## Production Phase (Enterprise Upgrade)
 | Resource | Monthly Cost Estimate |
 |----------|--------------|
-| Cloud SQL (db-f1-micro) | ~$10.00 |
-| Global Load Balancer | ~$18.00 |
-| Managed Instance Group (2x e2-micro)| ~$15.00 |
-| Cloud Storage (100GB) | ~$2.00 |
+| Amazon RDS PostgreSQL (db.t3.micro) | ~$10.00 |
+| Global Application Load Balancer (ALB) | ~$18.00 |
+| Auto Scaling Group (2x t3.micro)| ~$15.00 |
+| Amazon S3 (100GB) | ~$2.00 |
 | **Total** | **~$45.00** |
 
-*Cost Optimizations*: We intentionally delayed the Enterprise Upgrade to maximize our free trial credits while proving product-market fit on a single `e2-medium` instance.
+*Cost Optimizations*: We intentionally delayed the Enterprise Upgrade to maximize our free trial credits while proving product-market fit on a single `t3.small` instance.
 
 ---
 
@@ -775,16 +779,16 @@ Infrastructure as Code is documentation that executes. It is the only way to rel
 # 🛣 Future Roadmap
 
 - **Redis**: Implement caching for frequently accessed project Kanban boards.
-- **Pub/Sub**: Asynchronous email delivery and push notifications.
-- **Cloud Run**: Transition from MIGs to serverless containers for infinite scale-to-zero capabilities.
-- **AI Features**: Integrate Vertex AI for automated task summarization and sub-task generation.
+- **Amazon SNS/SQS**: Asynchronous email delivery and push notifications.
+- **AWS App Runner / ECS Fargate**: Transition from Auto Scaling Groups to serverless containers for infinite scale-to-zero capabilities.
+- **AI Features**: Integrate Amazon Bedrock for automated task summarization and sub-task generation.
 
 ---
 
 # 🌍 Live Deployment
 
-- **Frontend**: [http://104.198.151.178](http://104.198.151.178)
-- **Backend Swagger**: [http://104.198.151.178:8000/docs](http://104.198.151.178:8000/docs)
+- **Frontend**: [http://<AWS-ELASTIC-IP>](http://<AWS-ELASTIC-IP>)
+- **Backend Swagger**: [http://<AWS-ELASTIC-IP>:8000/docs](http://<AWS-ELASTIC-IP>:8000/docs)
 - **GitHub Repository**: [https://github.com/priiyu12/cloudtask-pro](https://github.com/priiyu12/cloudtask-pro)
 
 ---
@@ -825,4 +829,8 @@ cloudtask-pro/
 │   └── Dockerfile
 ├── docker-compose.yml
 └── README.md
+<<<<<<< HEAD
 ```
+=======
+```
+>>>>>>> 4637f30 (Updated the modifications)
