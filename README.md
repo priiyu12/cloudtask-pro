@@ -12,7 +12,7 @@
 3. [Features](#-features)
 4. [Architecture](#-overall-architecture)
 5. [Technology Stack](#-technology-stack)
-6. [Why AWS?](#-why-google-cloud-platform)
+6. [Why AWS?](#-why-aws)
 7. [Cloud Migration Journey](#-cloud-migration-journey)
 8. [Feature-wise Cloud Journey](#-feature-wise-cloud-journey)
 9. [Performance Optimizations](#-performance-optimizations)
