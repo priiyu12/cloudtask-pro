@@ -138,16 +138,20 @@ Azure is an excellent choice, particularly for Microsoft-centric environments. F
 
 # 🚀 Cloud Migration Journey
 
-**Version 1:** Local Machine ➔ SQLite ➔ Single Process
-**Version 2:** Docker ➔ Docker Compose ➔ PostgreSQL
-**Version 3:** Amazon EC2 ➔ Public Deployment
-**Version 4:** Amazon RDS PostgreSQL ➔ Managed Database
-**Version 5:** Amazon S3 ➔ Static Hosting
-**Version 6:** Amazon CloudFront ➔ Global Performance
-**Version 7:** Application Load Balancer (ALB) ➔ High Availability
-**Version 8:** Auto Scaling Group ➔ Auto Scaling
-**Version 9:** GitHub Actions ➔ CI/CD
-**Version 10:** Terraform ➔ Infrastructure as Code
+> A step-by-step evolution from a **local single-process application** to a **production-ready, highly available AWS infrastructure**.
+
+| Version | Migration | Goal |
+|:---:|---|---|
+| **V1** | 🖥️ Local Machine → SQLite → Single Process | Local Development |
+| **V2** | 🐳 Docker → Docker Compose → PostgreSQL | Containerization |
+| **V3** | ☁️ Amazon EC2 | Public Deployment |
+| **V4** | 🗄️ Amazon RDS PostgreSQL | Managed Database |
+| **V5** | 📦 Amazon S3 | Static Hosting |
+| **V6** | 🌍 Amazon CloudFront | Global Performance |
+| **V7** | ⚖️ Application Load Balancer (ALB) | High Availability |
+| **V8** | 📈 Auto Scaling Group (ASG) | Auto Scaling |
+| **V9** | 🔄 GitHub Actions | CI/CD Automation |
+| **V10** | 🏗️ Terraform | Infrastructure as Code |
 
 ---
 
