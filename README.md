@@ -99,14 +99,21 @@ graph TD
 
 # ⚙ Technology Stack
 
-**Frontend**: React, Vite, TypeScript, Tailwind CSS
-**Backend**: FastAPI, SQLAlchemy, Alembic
-**Database**: PostgreSQL
-**Containerization**: Docker, Docker Compose
-**Cloud**: AWS (Amazon EC2, Amazon RDS PostgreSQL, Amazon S3, Amazon CloudFront, Application Application Load Balancer (ALB) (ALB), Auto Scaling Group)
-**Infrastructure**: Terraform
-**CI/CD**: GitHub Actions
-**Monitoring**: Amazon CloudWatch, Amazon CloudWatch Logs
+| Category | Technologies |
+|---|---|
+| **Frontend** | React, Vite, TypeScript, Tailwind CSS |
+| **Backend** | FastAPI, SQLAlchemy, Alembic |
+| **Database** | PostgreSQL |
+| **Containerization** | Docker, Docker Compose |
+| **Cloud Platform** | AWS |
+| **Compute** | Amazon EC2, Auto Scaling Groups |
+| **Database Services** | Amazon RDS for PostgreSQL |
+| **Storage** | Amazon S3 |
+| **CDN** | Amazon CloudFront |
+| **Load Balancing** | Application Load Balancer (ALB) |
+| **Infrastructure as Code** | Terraform |
+| **CI/CD** | GitHub Actions |
+| **Monitoring & Logging** | Amazon CloudWatch, CloudWatch Logs |
 
 ---
 
