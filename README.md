@@ -87,11 +87,11 @@ graph LR
 ```mermaid
 graph TD
     Internet --> CloudCDN(Amazon CloudFront)
-    CloudCDN --> LoadBalancer(HTTPS Application Load Balancer (ALB))
-    LoadBalancer --> Auto Scaling Group(Auto Scaling Group)
-    Auto Scaling Group --> Frontend(React)
-    Auto Scaling Group --> Backend(FastAPI)
-    Backend --> CloudSQL(Amazon RDS PostgreSQL Postgres)
+    CloudCDN --> LoadBalancer(HTTPS Application Load Balancer)
+    LoadBalancer --> AutoScalingGroup(Auto Scaling Group)
+    AutoScalingGroup --> Frontend(React)
+    AutoScalingGroup --> Backend(FastAPI)
+    Backend --> RDS(Amazon RDS PostgreSQL)
     Backend --> S3(Amazon S3)
 ```
 
