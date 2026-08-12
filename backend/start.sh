@@ -2,7 +2,7 @@
 
 # Run migrations with retries
 max_retries=5
-count=0ww
+count=0
 until alembic upgrade head; do
   count=$((count+1))
   if [ $count -ge $max_retries ]; then
